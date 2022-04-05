@@ -7,5 +7,6 @@ import (
 
 func main() {
 	fmt.Println("Run Server")
-	api.RunServer()
+	api.RunGinExample()
+	//api.RunQueryParam()
 }
