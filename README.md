@@ -1,5 +1,10 @@
 #GoLang API 용 서버 프로젝트 입니다.
 
+0. GOROOT 및 GOPATH 지정
+   - GOROOT : go sdk 가 존재하는 위치
+   - GOPATH : 적용될 프로젝트(혹은 모듈)가 있는 위치
+
+
 1. 개발 서버 실행 Auto Build 적용(https://github.com/gravityblast/fresh)
 
 ```javascript
