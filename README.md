@@ -7,11 +7,11 @@
 
 1. 개발 서버 실행 Auto Build 적용(https://github.com/gravityblast/fresh)
 
-```javascript
-cd /go_api/api  // main.go가 존재하는 디렉토리
-    
-fresh.exe -c runner.conf // auto build 적용
-
+```re
+//main.go가 존재하는 디렉토리
+cd /go_api/api  
+// auto build 적용
+./fresh -c runner.conf
 ```
 
 2. golang으로 api를 학습, 구현, 테스트 하는 프로젝트
