@@ -133,7 +133,7 @@ func RunGinExample() {
 }
 
 //
-//func RunUsingMeddleware() {
+//func RunUsingMiddleware() {
 //	// Creates a router without any middleware by default
 //	r := gin.New()
 //
