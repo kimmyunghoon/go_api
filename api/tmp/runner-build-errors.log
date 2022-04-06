@@ -1,5 +1,0 @@
-# _/C_/Users/mhkim/GolandProjects/go_api/api/gin
-gin\example.go:148:22: undefined: MyBenchLogger
-gin\example.go:148:39: undefined: benchEndpoint
-gin\example.go:159:17: undefined: AuthRequired
-gin\example.go:168:29: undefined: analyticsEndpoint
