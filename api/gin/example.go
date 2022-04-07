@@ -1,27 +1,85 @@
 package gin
 
 import (
+	"../driver"
+	"../models"
+	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 	"net/http"
+	"time"
 )
 
 func RunGinExample() {
-
 	// Default With the Logger and Recovery middleware already attached
 	router := gin.Default()
 	// Blank Gin without middleware by default
 	// r := gin.New()
+
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong",
 		})
 	})
+	router.GET("/user", func(c *gin.Context) {
+		client := driver.DBClient()
+		ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+		collection := client.Database("clone").Collection("users")
+		type User struct {
+			Name string `bson:"name,omitempty"`
+			Age  int    `bson:"age,omitempty"`
+		}
+		/*
+			Iterate a cursor
+		*/
+		cur, currErr := collection.Find(ctx, bson.D{})
+
+		if currErr != nil {
+			panic(currErr)
+		}
+
+		var posts []User
+		if err := cur.All(ctx, &posts); err != nil {
+			panic(err)
+		}
+		fmt.Println(posts[0])
+		c.String(http.StatusOK, "Hello %s", posts)
+	})
 	// This handler will match /user/john but will not match /user/ or /user
 	router.GET("/user/:name", func(c *gin.Context) {
 		name := c.Param("name")
-		c.String(http.StatusOK, "Hello %s", name)
+		client := driver.DBClient()
+		ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+		collection := client.Database("clone").Collection("users")
+
+		/*
+			Iterate a cursor
+		*/
+		cur, currErr := collection.Find(ctx, bson.D{{"name", name}})
+		defer cur.Close(ctx)
+		if currErr != nil {
+			panic(currErr)
+		}
+
+		var posts []models.User
+		if err := cur.All(ctx, &posts); err != nil {
+			panic(err)
+		}
+		if len(posts) > 0 {
+			fmt.Println(posts[0])
+			c.String(http.StatusOK, "Hello %s Age is %d, input : %s", posts[0].Name, posts[0].Age, name)
+		} else {
+			c.String(http.StatusOK, "No Data, input : %s", name)
+		}
+
 	})
+
+	// This handler will match /user/john but will not match /user/ or /user
+	//router.GET("/user/:name", func(c *gin.Context) {
+	//	name := c.Param("name")
+	//	c.String(http.StatusOK, "Hello %s", name)
+	//})
 
 	// However, this one will match /user/john/ and also /user/john/send
 	// If no other routers match /user/john, it will redirect to /user/john/

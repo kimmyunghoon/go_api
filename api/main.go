@@ -1,13 +1,12 @@
 package main
 
 import (
-	"./driver"
+	"./gin"
 	"fmt"
 )
 
 func main() {
-	driver.MongoDB()
 	fmt.Println("Run Server")
-	//api.RunGinExample()
+	gin.RunGinExample()
 	//api.RunQueryParam()
 }

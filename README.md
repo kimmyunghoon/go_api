@@ -1,4 +1,4 @@
-#GoLang API 용 서버 프로젝트 입니다.
+# GoLang API 용 서버 프로젝트 입니다.
 
 0. GOROOT 및 GOPATH 지정
    - GOROOT : go sdk 가 존재하는 위치
