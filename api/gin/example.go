@@ -26,10 +26,7 @@ func RunGinExample() {
 		client := driver.DBClient()
 		ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 		collection := client.Database("clone").Collection("users")
-		type User struct {
-			Name string `bson:"name,omitempty"`
-			Age  int    `bson:"age,omitempty"`
-		}
+
 		/*
 			Iterate a cursor
 		*/
@@ -39,7 +36,7 @@ func RunGinExample() {
 			panic(currErr)
 		}
 
-		var posts []User
+		var posts []models.User
 		if err := cur.All(ctx, &posts); err != nil {
 			panic(err)
 		}
@@ -172,15 +169,20 @@ func RunGinExample() {
 	}
 
 	// Simple group: v1
-	v1 := router.Group("/v1")
+	method := router.Group("/method")
 	{
-		v1.POST("/login", fn)
-		v1.POST("/submit", fn)
-		v1.POST("/read", fn)
+		method.GET("/insert", InsertTest)
+		method.GET("/delete", DeleteTest)
+		method.GET("/update", UpdateTest)
+		method.GET("/create", CreateTest)
+		method.POST("/insert", InsertTest)
+		method.POST("/delete", DeleteTest)
+		method.POST("/update", UpdateTest)
+		method.POST("/create", CreateTest)
 	}
 
 	// Simple group: v2
-	v2 := router.Group("/v2")
+	v2 := router.Group("/test")
 	{
 		v2.POST("/login", fn)
 		v2.POST("/submit", fn)

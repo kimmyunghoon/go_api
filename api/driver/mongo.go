@@ -19,6 +19,11 @@ type MongoDB struct {
 var dbInstance *MongoDB
 var once sync.Once
 
+/**
+Singleton pattern 으로 구현한 객체를 가져오는 메소드
+참고 : https://pkg.go.dev/sync#Once
+*/
+
 func DBClient() *mongo.Client {
 	once.Do(func() {
 		fmt.Println("DB 연결 시작")
@@ -44,7 +49,7 @@ func newConnectionMongoDBClient(db *MongoDB) {
 	}
 	fmt.Println("client 생성")
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	err = client.Connect(ctx)
+	err = client.Connect(ctx) //차후에 데이터베이스 옵션 추가
 	if err != nil {
 		log.Fatal(err)
 	}

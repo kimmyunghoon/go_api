@@ -28,5 +28,8 @@ docker run --name mongodb-container -v ~/data:/data/db -d -p 27017:27017 mongo
     show dbs;
    # DB에 Collection생성하기
    db.createCollections("COLLECTION_NAME");
-   
+   # 생성한 Collection 목록 가져오기
+   db.getCollectionNames()
+   # Collection Data 가져오기
+   db.COLLECTION_NAME.find()
     ```
