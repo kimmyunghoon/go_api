@@ -1,8 +1,8 @@
 package main
 
 import (
-	"./gin"
 	"fmt"
+	"go_api/api/gin"
 )
 
 func main() {

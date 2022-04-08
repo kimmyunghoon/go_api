@@ -1,12 +1,12 @@
 package gin
 
 import (
-	"../driver"
-	"../models"
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
+	"go_api/api/driver"
+	"go_api/api/models"
 	"net/http"
 	"time"
 )
