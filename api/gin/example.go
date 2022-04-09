@@ -121,7 +121,7 @@ func RunGinExample() {
 	})
 
 	/**
-	Another example: query + post form
+	Another examples: query + post form
 
 	POST /post?id=1234&page=1 HTTP/1.1
 	Content-Type: application/x-www-form-urlencoded
