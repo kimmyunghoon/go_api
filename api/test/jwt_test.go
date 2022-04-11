@@ -5,6 +5,7 @@ import (
 	"testing"
 )
 
+// https://github.com/dgrijalva/jwt-go/blob/master/http_example_test.go
 func Test(t *testing.T) {
 	jwt.GetToken(t)
 }

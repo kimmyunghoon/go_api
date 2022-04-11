@@ -48,8 +48,7 @@ func GetToken(t *testing.T) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 			return nil, errors.New("unexpected signing method")
 		}
-		fmt.Println(verifyKey)
-		return verifyKey, nil
+		return signKey, nil
 	})
 	fmt.Println(token, err)
 	if err != nil {
