@@ -1,11 +1,14 @@
 package main
 
-import "go_api/api/examples/jwt"
+import (
+	"go_api/api/gin"
+)
 
 func main() {
 	//fmt.Println("Run Server")
-	//gin.RunGinExample()
+
+	gin.RunGinExample()
 	//api.RunQueryParam()
-	jwt.Create_JWT()
+
 	//jwt.TestGetToken()
 }

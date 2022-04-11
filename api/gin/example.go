@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go_api/api/driver"
+	"go_api/api/examples/jwt"
 	"go_api/api/models"
 	"net/http"
 	"time"
@@ -17,9 +18,14 @@ func RunGinExample() {
 	// Blank Gin without middleware by default
 	// r := gin.New()
 
-	router.GET("/ping", func(c *gin.Context) {
+	router.POST("/authenticate", func(c *gin.Context) {
+
+		c.String(200, jwt.Create_JWT())
+	})
+	router.POST("/restricted", func(c *gin.Context) {
+
 		c.JSON(200, gin.H{
-			"message": "pong",
+			"message": "test",
 		})
 	})
 	router.GET("/user", func(c *gin.Context) {

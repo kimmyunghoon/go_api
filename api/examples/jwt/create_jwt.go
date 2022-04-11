@@ -1,12 +1,11 @@
 package jwt
 
 import (
-	"bytes"
+	"crypto/rand"
+	"crypto/rsa"
 	"fmt"
 	"github.com/golang-jwt/jwt"
 	"go_api/api/models"
-	"io"
-	"net/http"
 	"time"
 )
 
@@ -15,35 +14,28 @@ func createToken(user string) (string, error) {
 	t := jwt.New(jwt.GetSigningMethod("RS256"))
 	t.Claims = &CustomClaimsExample{
 		&jwt.StandardClaims{
-
 			ExpiresAt: time.Now().Add(time.Minute * 1).Unix(),
 		},
-		"level1",
+		"test",
 		models.User{user, 20},
 	}
+	fmt.Println(t.Header)
+	fmt.Println(t.Claims)
 	return t.SignedString(signKey)
 }
 
-func Create_JWT() {
+func Create_JWT() string {
+
+	signKey, _ = rsa.GenerateKey(rand.Reader, 2048)
+	verifyKey = &signKey.PublicKey
+	fmt.Println("verifyKey : ", verifyKey)
 	serverPort = 8080 //??
 	// Make a sample token
 	// In a real world situation, this token will have been acquired from
 	// some other API call (see Example_getTokenViaHTTP)
-	token, err := createToken("kims")
-	fmt.Println("test", token, err)
+	token, err := createToken("kim")
+	//fmt.Printf("test token : %s, err : %s", token, err)
 	fatal(err)
 
-	// Make request.  See func restrictedHandler for example request processor
-	req, err := http.NewRequest("GET", fmt.Sprintf("http://localhost:%v/restricted", serverPort), nil)
-	fatal(err)
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", token))
-	res, err := http.DefaultClient.Do(req)
-	fatal(err)
-
-	// Read the response body
-	buf := new(bytes.Buffer)
-	io.Copy(buf, res.Body)
-	res.Body.Close()
-	fmt.Println(buf.String())
-
+	return token
 }
