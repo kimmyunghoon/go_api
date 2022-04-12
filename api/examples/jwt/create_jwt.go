@@ -1,16 +1,15 @@
 package jwt
 
 import (
-	"fmt"
+	"crypto/rand"
+	"crypto/rsa"
 	"github.com/golang-jwt/jwt"
 	"go_api/api/models"
-	"io/ioutil"
-	"os"
 	"time"
 )
 
 const (
-	//ssh-keygen -t rsa -b 4096 -m PEM -f jwtRS256.key
+	//ssh-keygen -t rsa -b 2048 -m PEM -f jwtRS256.key -q -N ""
 	privKeyPath = "\\keys\\jwtRS256.key"     // openssl genrsa -out app.rsa keysize
 	pubKeyPath  = "\\keys\\jwtRS256.key.pub" // openssl rsa -in app.rsa -pubout > app.rsa.pub
 )
@@ -25,25 +24,27 @@ func createToken(user string) (string, error) {
 		"JWT",
 		models.User{user, 20},
 	}
-	fmt.Println(t)
 	return t.SignedString(signKey)
 }
 
 func Create_JWT() string {
-	path, err := os.Getwd()
-	fmt.Println(path)
-	signBytes, err := ioutil.ReadFile(path + privKeyPath)
-	fatal(err)
 
-	signKey, err = jwt.ParseRSAPrivateKeyFromPEM(signBytes)
-	fmt.Println(signKey)
-	fatal(err)
+	signKey, _ = rsa.GenerateKey(rand.Reader, 2048)
+	verifyKey = &signKey.PublicKey
+	//path, err := os.Getwd()
+	//signBytes, err := ioutil.ReadFile(path + privKeyPath)
+	//fatal(err)
+	//
+	//signKey, err = jwt.ParseRSAPrivateKeyFromPEM(signBytes)
+	//fatal(err)
 
-	verifyBytes, err := ioutil.ReadFile(path + pubKeyPath)
-	fatal(err)
-
-	verifyKey, err = jwt.ParseRSAPublicKeyFromPEM(verifyBytes)
-	fatal(err)
+	//verifyBytes, err := ioutil.ReadFile(path + pubKeyPath)
+	//fmt.Println(path + pubKeyPath)
+	//fatal(err)
+	//
+	//verifyKey, err = jwt.ParseRSAPublicKeyFromPEM(verifyBytes)
+	//fmt.Println(verifyKey)
+	//fatal(err)
 	serverPort = 8080 //??
 	// Make a sample token
 	// In a real world situation, this token will have been acquired from

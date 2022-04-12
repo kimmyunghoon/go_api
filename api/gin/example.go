@@ -17,15 +17,18 @@ func RunGinExample() {
 	router := gin.Default()
 	// Blank Gin without middleware by default
 	// r := gin.New()
+	router.GET("/authenticate", func(c *gin.Context) {
 
+		c.String(200, jwt.Create_JWT())
+	})
 	router.POST("/authenticate", func(c *gin.Context) {
 
 		c.String(200, jwt.Create_JWT())
 	})
-	router.POST("/restricted", func(c *gin.Context) {
-
+	router.GET("/restricted", func(c *gin.Context) {
+		jwt.GetToken(nil)
 		c.JSON(200, gin.H{
-			"message": "test",
+			"message": "s",
 		})
 	})
 	router.GET("/user", func(c *gin.Context) {
