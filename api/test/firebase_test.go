@@ -6,5 +6,5 @@ import (
 )
 
 func TestDB(t *testing.T) {
-	driver.FirebaseDatabase(t)
+	driver.FirestoreInit(t)
 }
