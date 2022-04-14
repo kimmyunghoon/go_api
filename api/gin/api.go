@@ -43,7 +43,6 @@ func GetFirestoreCollection(c *gin.Context) {
 		}
 		//data = doc.Data()
 	}
-
 	c.JSON(http.StatusOK, gin.H{
 		"find collection": "test",
 	})
