@@ -47,3 +47,4 @@ func GetFirestoreCollection(c *gin.Context) {
 		"find collection": "test",
 	})
 }
+
