@@ -1,49 +1,54 @@
 package driver
 
 import (
+	"cloud.google.com/go/firestore"
 	"context"
 	firebase "firebase.google.com/go"
 	"fmt"
-	"go_api/api/models"
 	"google.golang.org/api/iterator"
 	"log"
 	"os"
 	"testing"
 )
 
-func FirebaseDatabase(t *testing.T) {
-	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "C:\\keys\\golang-5bc81-firebase-adminsdk-6a33r-3e2f422ed2.json")
-	ctx := context.Background()
-	conf := &firebase.Config{
+type Firestore struct {
+	client *firestore.Client
+	conf   *firebase.Config
+}
+
+var firestoreInstance *Firestore
+
+func FireStoreClient() *firestore.Client {
+	once.Do(func() {
+		fmt.Println("DB 연결 시작")
+		firestoreInstance = new(Firestore)
+		newFirestoreConfig(firestoreInstance)
+		newConnectionFirestoreClient(firestoreInstance)
+		fmt.Println("DB 연결 완료")
+	})
+	return firestoreInstance.client
+}
+func newFirestoreConfig(store *Firestore) {
+	store.conf = &firebase.Config{
 		DatabaseURL: "https://golang-5bc81.firebaseio.com",
 	}
-	//opt := option.WithCredentialsFile("golang-5bc81-firebase-adminsdk-6a33r-3e2f422ed2.json")
-	app, err := firebase.NewApp(ctx, conf)
+}
+
+func newConnectionFirestoreClient(store *Firestore) {
+	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "C:\\keys\\golang-5bc81-firebase-adminsdk-6a33r-3e2f422ed2.json")
+
+	ctx := context.Background()
+	app, err := firebase.NewApp(ctx, store.conf)
 	if err != nil {
-		log.Fatalf("error initializing app: %v\n", err)
+		log.Fatalln(err)
 	}
-	client, err := app.Database(ctx)
+
+	client, err := app.Firestore(ctx)
 	if err != nil {
-		log.Fatalf("error get client : %v\n", err)
+		log.Fatalln(err)
 	}
-	t.Log(client)
-	ref := client.NewRef("/databases/test/")
-	t.Log(ref.Key, ref.Path)
-	usersRef := ref.Child("/users")
-	err = usersRef.Set(ctx, map[string]*models.User{
-		"a": {
-			Age:  30,
-			Name: "Alan Turing",
-		},
-		"b": {
-			Age:  222,
-			Name: "Grace Hopper",
-		},
-	})
-	if err != nil {
-		log.Fatalln("Error setting value:", err)
-	}
-	//fmt.Println(client.NewRef("test").Get(ctx, j{}))
+
+	store.client = client
 }
 
 func FirestoreInit(t *testing.T) {
