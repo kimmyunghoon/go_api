@@ -2,6 +2,7 @@ package gin
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"go_api/api/driver"
@@ -26,12 +27,14 @@ func CreateTest(c *gin.Context) {
 	c.String(http.StatusOK, "Create Test Func")
 }
 
-func GetFirestoreCollection(c *gin.Context) {
+func GetFirestoneCollectionAllData(c *gin.Context) {
 	client := driver.FireStoreClient()
 	collection := c.Param("collection")
 	ctx := context.Background()
 	iter := client.Collection(collection).Documents(ctx)
 	fmt.Println(iter)
+	data := map[int]string{}
+	index := 0
 	for {
 		doc, err := iter.Next()
 		fmt.Println(doc)
@@ -41,10 +44,15 @@ func GetFirestoreCollection(c *gin.Context) {
 		if err != nil {
 			log.Fatalf("Failed to iterate: %v", err)
 		}
+		fmt.Println(doc.Data())
+		b, _ := json.Marshal(doc.Data())
+		data[index] = string(b)
 		//data = doc.Data()
+		index++
 	}
+	//gin.h = map[string]interface{}
 	c.JSON(http.StatusOK, gin.H{
-		"find collection": "test",
+		"find collection": collection,
+		"data":            data,
 	})
 }
-

@@ -203,7 +203,7 @@ func RunGinExample() {
 	}
 	firestore := router.Group("/firestore")
 	{
-		firestore.GET("/:collection", GetFirestoreCollection)
+		firestore.GET("/:collection/all", GetFirestoneCollectionAllData)
 	}
 
 	router.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
