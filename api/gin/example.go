@@ -6,31 +6,35 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go_api/api/driver"
-	"go_api/api/examples/jwt"
-	"go_api/api/models"
+	jwt2 "go_api/examples/jwt"
+	"go_api/internal/models"
 	"net/http"
 	"time"
 )
 
 func RunGinExample() {
 	// Default With the Logger and Recovery middleware already attached
+
+	defer driver.FireStoreClient().Close()
+
 	router := gin.Default()
 	// Blank Gin without middleware by default
 	// r := gin.New()
 	router.GET("/authenticate", func(c *gin.Context) {
 
-		c.String(200, jwt.Create_JWT())
+		c.String(200, jwt2.Create_JWT())
 	})
 	router.POST("/authenticate", func(c *gin.Context) {
 
-		c.String(200, jwt.Create_JWT())
+		c.String(200, jwt2.Create_JWT())
 	})
 	router.GET("/restricted", func(c *gin.Context) {
-		jwt.GetToken(nil)
+		jwt2.GetToken(nil)
 		c.JSON(200, gin.H{
 			"message": "s",
 		})
 	})
+
 	router.GET("/user", func(c *gin.Context) {
 		client := driver.DBClient()
 		ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
@@ -196,6 +200,10 @@ func RunGinExample() {
 		v2.POST("/login", fn)
 		v2.POST("/submit", fn)
 		v2.POST("/read", fn)
+	}
+	firestore := router.Group("/firestore")
+	{
+		firestore.GET("/:collection", GetFirestoreCollection)
 	}
 
 	router.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")

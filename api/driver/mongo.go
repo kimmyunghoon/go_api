@@ -3,7 +3,6 @@ package driver
 import (
 	"context"
 	"fmt"
-	"sync"
 	"time"
 	//"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -17,7 +16,6 @@ type MongoDB struct {
 }
 
 var dbInstance *MongoDB
-var once sync.Once
 
 /**
 Singleton pattern 으로 구현한 객체를 가져오는 메소드
