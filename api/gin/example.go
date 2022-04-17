@@ -20,6 +20,7 @@ func RunGinExample() {
 	router := gin.Default()
 	// Blank Gin without middleware by default
 	// r := gin.New()
+	router.Use(CORSMiddleware())
 	router.GET("/authenticate", func(c *gin.Context) {
 
 		c.String(200, jwt2.Create_JWT())
@@ -34,14 +35,13 @@ func RunGinExample() {
 			"message": "s",
 		})
 	})
-
 	router.GET("/user", func(c *gin.Context) {
 		client := driver.DBClient()
 		ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 		collection := client.Database("clone").Collection("users")
 
 		/*
-			Iterate a cursor
+			Iterate a cursors
 		*/
 		cur, currErr := collection.Find(ctx, bson.D{})
 
@@ -102,6 +102,7 @@ func RunGinExample() {
 	// For each matched request Context will hold the route definition
 	router.POST("/user/:name/*action", func(c *gin.Context) {
 		b := c.FullPath() == "/user/:name/*action" // true
+
 		c.String(http.StatusOK, "%t", b)
 	})
 
@@ -175,10 +176,10 @@ func RunGinExample() {
 
 		fmt.Printf("id: %s; page: %s; name: %s; message: %s", id, page, name, message)
 	})
-
+	s := "ss"
 	//Grouping routes
 	var fn = func(c *gin.Context) {
-		c.String(http.StatusOK, "test")
+		c.String(http.StatusOK, "test", s)
 	}
 
 	// Simple group: v1
@@ -203,11 +204,27 @@ func RunGinExample() {
 	}
 	firestore := router.Group("/firestore")
 	{
+		firestore.GET("/:collection/set", GetFirestoneCollectionSet)
 		firestore.GET("/:collection/all", GetFirestoneCollectionAllData)
+		firestore.GET("/:collection/common", GetFirestoneCollectionData)
 	}
 
 	router.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 
+}
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Header("Access-Control-Allow-Headers", "Content-Type")
+		c.Header("Access-Control-Allow-Credentials", "true")
+		c.Header("Access-Control-Allow-Origin", "*")
+		c.Header("Access-Control-Allow-Methods", "GET, POST")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
+	}
 }
 
 //

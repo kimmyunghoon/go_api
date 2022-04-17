@@ -35,8 +35,8 @@ func newFirestoreConfig(store *Firestore) {
 }
 
 func newConnectionFirestoreClient(store *Firestore) {
-	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "C:\\keys\\golang-5bc81-firebase-adminsdk-6a33r-3e2f422ed2.json")
-
+	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "E:\\key\\golang-5bc81-firebase-adminsdk-6a33r-deec04aed6.json")
+	//os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "C:\\keys\\golang-5bc81-firebase-adminsdk-6a33r-3e2f422ed2.json")
 	ctx := context.Background()
 	app, err := firebase.NewApp(ctx, store.conf)
 	if err != nil {
@@ -52,7 +52,7 @@ func newConnectionFirestoreClient(store *Firestore) {
 }
 
 func FirestoreInit(t *testing.T) {
-	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "C:\\keys\\golang-5bc81-firebase-adminsdk-6a33r-3e2f422ed2.json")
+	//os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "C:\\keys\\golang-5bc81-firebase-adminsdk-6a33r-3e2f422ed2.json")
 	conf := &firebase.Config{
 		DatabaseURL: "https://golang-5bc81.firebaseio.com",
 	}
