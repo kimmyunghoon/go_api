@@ -2,12 +2,10 @@ package gin
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"go_api/api/driver"
 	"go_api/internal/models"
-	"google.golang.org/api/iterator"
 	"log"
 	"net/http"
 )
@@ -28,6 +26,36 @@ func CreateTest(c *gin.Context) {
 	c.String(http.StatusOK, "Create Test Func")
 }
 
+func FirestoneCollectionDelete(c *gin.Context) {
+
+	client := driver.FireStoreClient()
+	collection := c.Param("collection")
+	var tmpMemo models.Memo
+
+	if err := c.BindJSON(&tmpMemo); err != nil {
+		// DO SOMETHING WITH THE ERROR
+	}
+	ctx := context.Background()
+	fmt.Println(tmpMemo.Id)
+	_, err := client.Collection(collection).Doc(tmpMemo.Id).Delete(ctx)
+	if err != nil {
+		// Handle any errors in an appropriate way, such as returning them.
+		log.Printf("An error has occurred: %s", err)
+		c.JSON(http.StatusOK, gin.H{
+			"id":       tmpMemo.Id,
+			"title":    tmpMemo.Title,
+			"contents": tmpMemo.Contents,
+			"code":     http.StatusNoContent,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"id":       tmpMemo.Id,
+		"title":    tmpMemo.Title,
+		"contents": tmpMemo.Contents,
+		"code":     http.StatusOK,
+	})
+}
 func FirestoneCollectionSet(c *gin.Context) {
 
 	client := driver.FireStoreClient()
@@ -39,58 +67,29 @@ func FirestoneCollectionSet(c *gin.Context) {
 	}
 
 	ctx := context.Background()
-	_, _, err := client.Collection(collection).Add(ctx, tmpMemo)
+	doc, _, err := client.Collection(collection).Add(ctx, tmpMemo)
+
 	if err != nil {
 		// Handle any errors in an appropriate way, such as returning them.
 		log.Printf("An error has occurred: %s", err)
 	}
 	c.JSON(http.StatusOK, gin.H{
+		"id":       doc.ID,
 		"title":    tmpMemo.Title,
 		"contents": tmpMemo.Contents,
 		"code":     http.StatusOK,
 	})
 }
-
-func GetFirestoneCollectionAllData(c *gin.Context) {
-	client := driver.FireStoreClient()
-	collection := c.Param("collection")
-	ctx := context.Background()
-	iter := client.Collection(collection).Documents(ctx)
-	fmt.Println(iter)
-	data := map[int]string{}
-	index := 0
-	for {
-		doc, err := iter.Next()
-		fmt.Println(doc)
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			log.Fatalf("Failed to iterate: %v", err)
-		}
-		fmt.Println(doc.Data())
-		b, _ := json.Marshal(doc.Data())
-		data[index] = string(b)
-		//data = doc.Data()
-		index++
-	}
-	c.JSON(http.StatusOK, gin.H{
-		"find collection": collection,
-		"data":            data,
-	})
-}
-func FirestoneCollectionData(c *gin.Context) {
+func FirestoneCollectionAll(c *gin.Context) {
 
 	client := driver.FireStoreClient()
 	collection := c.Param("collection")
 	ctx := context.Background()
-
-	colRef := client.Collection(collection)
-
-	docs, _ := colRef.Documents(ctx).GetAll()
+	docs, _ := client.Collection(collection).Documents(ctx).GetAll()
 	returnValues := make([]models.Memo, len(docs))
 	for index, doc := range docs {
 		doc.DataTo(&returnValues[index])
+		returnValues[index].Id = doc.Ref.ID
 	}
 
 	c.JSON(http.StatusOK, gin.H{

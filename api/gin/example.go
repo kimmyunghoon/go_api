@@ -206,8 +206,8 @@ func RunGinExample() {
 	{
 		//firestore.GET("/:collection/set", FirestoneCollectionSet)
 		firestore.POST("/:collection/set", FirestoneCollectionSet)
-		firestore.GET("/:collection/all", GetFirestoneCollectionAllData)
-		firestore.GET("/:collection/common", FirestoneCollectionData)
+		firestore.POST("/:collection/delete", FirestoneCollectionDelete)
+		firestore.GET("/:collection/common", FirestoneCollectionAll)
 	}
 
 	router.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
