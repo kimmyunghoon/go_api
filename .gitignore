@@ -2,3 +2,4 @@
 /api/tmp
 /pkg/
 /.idea/
+.env

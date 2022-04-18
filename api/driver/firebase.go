@@ -5,6 +5,7 @@ import (
 	"context"
 	firebase "firebase.google.com/go"
 	"fmt"
+	"github.com/joho/godotenv"
 	"google.golang.org/api/iterator"
 	"log"
 	"os"
@@ -21,6 +22,11 @@ var firestoreInstance *Firestore
 func FireStoreClient() *firestore.Client {
 	once.Do(func() {
 		fmt.Println("DB 연결 시작")
+		path, _ := os.Getwd()
+		err := godotenv.Load(path + "/configs/.env")
+		if err != nil {
+			log.Fatal("Error loading .env file")
+		}
 		firestoreInstance = new(Firestore)
 		newFirestoreConfig(firestoreInstance)
 		newConnectionFirestoreClient(firestoreInstance)
@@ -30,13 +36,14 @@ func FireStoreClient() *firestore.Client {
 }
 func newFirestoreConfig(store *Firestore) {
 	store.conf = &firebase.Config{
-		DatabaseURL: "https://golang-5bc81.firebaseio.com",
+
+		DatabaseURL: `https://` + os.Getenv("ID") + `.firebaseio.com`,
+		ProjectID:   os.Getenv("ID"),
 	}
 }
 
 func newConnectionFirestoreClient(store *Firestore) {
-	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "E:\\key\\golang-5bc81-firebase-adminsdk-6a33r-deec04aed6.json")
-	//os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "C:\\keys\\golang-5bc81-firebase-adminsdk-6a33r-3e2f422ed2.json")
+
 	ctx := context.Background()
 	app, err := firebase.NewApp(ctx, store.conf)
 	if err != nil {
@@ -52,9 +59,9 @@ func newConnectionFirestoreClient(store *Firestore) {
 }
 
 func FirestoreInit(t *testing.T) {
-	//os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "C:\\keys\\golang-5bc81-firebase-adminsdk-6a33r-3e2f422ed2.json")
+	//os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", os.Getenv("GOOGLE_APPLICATION_CREDENTIALS"))
 	conf := &firebase.Config{
-		DatabaseURL: "https://golang-5bc81.firebaseio.com",
+		DatabaseURL: `https://` + os.Getenv("DBNAME") + `.firebaseio.com`,
 	}
 	ctx := context.Background()
 	app, err := firebase.NewApp(ctx, conf)
