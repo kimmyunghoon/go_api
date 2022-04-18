@@ -28,23 +28,25 @@ func CreateTest(c *gin.Context) {
 	c.String(http.StatusOK, "Create Test Func")
 }
 
-func GetFirestoneCollectionSet(c *gin.Context) {
+func FirestoneCollectionSet(c *gin.Context) {
+
 	client := driver.FireStoreClient()
 	collection := c.Param("collection")
-	title := c.DefaultQuery("title", "none title")
-	contents := c.DefaultQuery("contents", "none contents")
+	var tmpMemo models.Memo
+
+	if err := c.BindJSON(&tmpMemo); err != nil {
+		// DO SOMETHING WITH THE ERROR
+	}
+
 	ctx := context.Background()
-	_, err := client.Collection(collection).Doc("test").Set(ctx, models.Memo{
-		Title:    title,
-		Contents: contents,
-	})
+	_, _, err := client.Collection(collection).Add(ctx, tmpMemo)
 	if err != nil {
 		// Handle any errors in an appropriate way, such as returning them.
 		log.Printf("An error has occurred: %s", err)
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"title":    title,
-		"contents": contents,
+		"title":    tmpMemo.Title,
+		"contents": tmpMemo.Contents,
 		"code":     http.StatusOK,
 	})
 }
@@ -72,37 +74,27 @@ func GetFirestoneCollectionAllData(c *gin.Context) {
 		//data = doc.Data()
 		index++
 	}
-	//gin.h = map[string]interface{}
 	c.JSON(http.StatusOK, gin.H{
 		"find collection": collection,
 		"data":            data,
 	})
 }
-func GetFirestoneCollectionData(c *gin.Context) {
+func FirestoneCollectionData(c *gin.Context) {
 
 	client := driver.FireStoreClient()
 	collection := c.Param("collection")
 	ctx := context.Background()
-	//iter := client.Collection(collection).Documents(ctx).GetAll()
 
-	dsnap, err := client.Collection(collection).Doc("common").Get(ctx)
-	if err != nil {
-		log.Fatalf("err : %v", err)
-	}
-	//make([]models.Memo,0)
-	memo := models.Memo{}
-	dsnap.DataTo(&memo)
+	colRef := client.Collection(collection)
 
-	e, err := json.Marshal(memo)
-	if err != nil {
-		fmt.Println(err)
-		return
+	docs, _ := colRef.Documents(ctx).GetAll()
+	returnValues := make([]models.Memo, len(docs))
+	for index, doc := range docs {
+		doc.DataTo(&returnValues[index])
 	}
-	fmt.Println(string(e))
-	fmt.Println("result ", dsnap.Data(), memo)
-	//gin.h = map[string]interface{}
+
 	c.JSON(http.StatusOK, gin.H{
 		"code":    http.StatusOK,
-		"message": string(e), // cast it to string before showing
+		"message": returnValues,
 	})
 }
