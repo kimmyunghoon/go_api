@@ -46,7 +46,14 @@ func FirestoneCollectionDelete(c *gin.Context) {
 			"title":    tmpMemo.Title,
 			"contents": tmpMemo.Contents,
 			"code":     http.StatusNoContent,
+			"message":  nil,
 		})
+	}
+	docs, _ := client.Collection(collection).Documents(ctx).GetAll()
+	returnValues := make([]models.Memo, len(docs))
+	for index, doc := range docs {
+		doc.DataTo(&returnValues[index])
+		returnValues[index].Id = doc.Ref.ID
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -54,6 +61,7 @@ func FirestoneCollectionDelete(c *gin.Context) {
 		"title":    tmpMemo.Title,
 		"contents": tmpMemo.Contents,
 		"code":     http.StatusOK,
+		"message":  returnValues,
 	})
 }
 func FirestoneCollectionSet(c *gin.Context) {
@@ -73,11 +81,19 @@ func FirestoneCollectionSet(c *gin.Context) {
 		// Handle any errors in an appropriate way, such as returning them.
 		log.Printf("An error has occurred: %s", err)
 	}
+	docs, _ := client.Collection(collection).Documents(ctx).GetAll()
+	returnValues := make([]models.Memo, len(docs))
+	for index, doc := range docs {
+		doc.DataTo(&returnValues[index])
+		returnValues[index].Id = doc.Ref.ID
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"id":       doc.ID,
 		"title":    tmpMemo.Title,
 		"contents": tmpMemo.Contents,
 		"code":     http.StatusOK,
+		"message":  returnValues,
 	})
 }
 func FirestoneCollectionAll(c *gin.Context) {
