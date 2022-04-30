@@ -21,8 +21,8 @@ var firestoreInstance *Firestore
 
 func FireStoreClient() *firestore.Client {
 	once.Do(func() {
-		fmt.Println("DB 연결 시작")
 		path, _ := os.Getwd()
+		fmt.Println("DB 연결 시작")
 		err := godotenv.Load(path + "/configs/.env")
 		if err != nil {
 			log.Fatal("Error loading .env file")
@@ -59,6 +59,7 @@ func newConnectionFirestoreClient(store *Firestore) {
 }
 
 func FirestoreInit(t *testing.T) {
+
 	//os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", os.Getenv("GOOGLE_APPLICATION_CREDENTIALS"))
 	conf := &firebase.Config{
 		DatabaseURL: `https://` + os.Getenv("DBNAME") + `.firebaseio.com`,
