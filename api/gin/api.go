@@ -82,7 +82,9 @@ func FirestoneCollectionSet(c *gin.Context) {
 		log.Printf("An error has occurred: %s", err)
 	}
 	docs, _ := client.Collection(collection).Documents(ctx).GetAll()
+
 	returnValues := make([]models.Memo, len(docs))
+
 	for index, doc := range docs {
 		doc.DataTo(&returnValues[index])
 		returnValues[index].Id = doc.Ref.ID

@@ -208,6 +208,9 @@ func RunGinExample() {
 		firestore.POST("/:collection/set", FirestoneCollectionSet)
 		firestore.POST("/:collection/delete", FirestoneCollectionDelete)
 		firestore.GET("/:collection/common", FirestoneCollectionAll)
+		firestore.POST("/waters/set", SetWaterRecord)
+		firestore.POST("/waters/get", GetWaterRecord)
+		firestore.GET("/waters/get", GetWaterRecord)
 	}
 
 	router.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
