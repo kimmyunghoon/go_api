@@ -2,6 +2,7 @@ package gin
 
 import (
 	"context"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"go_api/api/driver"
 	"go_api/internal/models"
@@ -18,9 +19,9 @@ func SetWaterRecord(c *gin.Context) {
 	if err := c.BindJSON(&tmpWater); err != nil {
 		// DO SOMETHING WITH THE ERROR
 	}
-
+	fmt.Println(tmpWater)
 	ctx := context.Background()
-	doc, _, err := client.Collection(collection).Add(ctx, tmpWater)
+	_, err := client.Collection(collection).Doc(tmpWater.Date).Set(ctx, tmpWater)
 
 	if err != nil {
 		// Handle any errors in an appropriate way, such as returning them.
@@ -30,8 +31,8 @@ func SetWaterRecord(c *gin.Context) {
 	//doc.DataTo(&returnValues)
 
 	c.JSON(http.StatusOK, gin.H{
-		"id":   doc.ID,
-		"code": http.StatusOK,
+		"code":    http.StatusOK,
+		"message": tmpWater,
 	})
 }
 
@@ -57,11 +58,13 @@ func GetWaterRecord(c *gin.Context) {
 	//	})
 	//	return
 	//}
+
 	if !doc.Exists() {
 		_, _ = client.Collection(collection).Doc(tmpWater.Date).Set(ctx, tmpWater)
+	} else {
+		doc.DataTo(&returnValues)
 	}
-	//doc.DataTo(&returnValues)
-
+	fmt.Println(returnValues)
 	c.JSON(http.StatusOK, gin.H{
 		"code":    http.StatusOK,
 		"message": returnValues,
