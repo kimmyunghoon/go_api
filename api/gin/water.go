@@ -46,23 +46,25 @@ func GetWaterRecord(c *gin.Context) {
 	}
 
 	ctx := context.Background()
+	docinfo := client.Collection(collection).Doc(tmpWater.Date)
 
-	doc, err := client.Collection(collection).Doc(tmpWater.Date).Get(ctx)
+	doc, _ := docinfo.Get(ctx)
 	returnValues := models.Water{}
-	if err != nil {
-		// Handle any errors in an appropriate way, such as returning them.
-		log.Printf("An error has occurred: %s", err)
-
-		c.JSON(http.StatusOK, gin.H{
-			"code":    http.StatusOK,
-			"message": returnValues,
-		})
+	//if err != nil {
+	//	c.JSON(http.StatusBadRequest, gin.H{
+	//		"code":    http.StatusBadRequest,
+	//		"message": returnValues,
+	//	})
+	//	return
+	//}
+	if !doc.Exists() {
+		_, _ = client.Collection(collection).Doc(tmpWater.Date).Set(ctx, tmpWater)
 	}
-
-	doc.DataTo(&returnValues)
+	//doc.DataTo(&returnValues)
 
 	c.JSON(http.StatusOK, gin.H{
 		"code":    http.StatusOK,
 		"message": returnValues,
 	})
+	return
 }
